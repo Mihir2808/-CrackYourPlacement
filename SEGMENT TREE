@@ -1,0 +1,78 @@
+// 1. Range Sum Query - Immutable
+
+class NumArray {
+public:
+    vector<int> arr;
+    NumArray(vector<int>& nums) {
+        for(auto i : nums){
+            arr.push_back(i);
+        }
+    }
+    
+    int sumRange(int left, int right) {
+        int sum = 0;
+        for(int i =  left ; i <= right; i++){
+            sum += arr[i];
+        }
+        return sum;
+    }
+};
+
+
+
+// 2. Range Sum Query - Mutable
+class NumArray {
+public:
+    int len;
+    vector<int> t;  // segment tree
+    NumArray(vector<int>& nums) {
+        int l = nums.size();
+        len = l;
+        t.resize(4*len);
+        build( 1, 0, l-1,nums);
+    }
+    void build(int v, int tl, int tr, vector<int> &nums){
+        if(tl == tr){
+            t[v] = nums[tl];
+            return ;
+        }
+        int tm = (tl + tr)/2;
+        build(2*v , tl, tm , nums);
+        build(2*v+ 1 , tm+1, tr , nums);
+
+        t[v] = t[2*v] + t[2*v+1];
+    }
+
+    void update(int v, int tl, int tr, int index, int val){
+        if(tl == tr && tl == index){
+            t[v] = val;
+            return ;
+        }
+        if(tl > index || tr < index)    return ;
+
+        int tm = (tl + tr)/2;
+        update(2*v , tl, tm , index, val);
+        update(2*v+ 1 , tm+1, tr , index, val);
+
+        t[v] = t[2*v] + t[2*v+1];
+    }
+    
+    void update(int index, int val) {
+        update(1, 0, len-1, index, val);
+    }
+    
+    int query(int v, int tl, int tr, int l, int r){
+        // no overlap
+        if(tl > r || tr < l)    return 0;
+        // fully overlap 
+        if(tl >= l && tr <= r)  return t[v];
+
+        int tm = (tl+tr)/2;
+        int leftAns = query(2*v, tl, tm , l, r);
+        int rightAns = query(2*v+1, tm+1, tr , l, r);
+        return leftAns + rightAns;
+    }
+    int sumRange(int left, int right) {
+        return query(1, 0, len-1, left, right);
+    }
+};
