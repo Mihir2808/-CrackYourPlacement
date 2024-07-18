@@ -76,3 +76,42 @@ public:
         return query(1, 0, len-1, left, right);
     }
 };
+
+
+// 3. Count of Smaller Numbers After Self
+void mergeSort(int i, int j, vector<pair<int,int>> &nums, vector<int> &v){
+        if(i >= j)  return ;
+        int mid = (i+j)/2;
+        mergeSort(i, mid, nums,v) ;
+        mergeSort(mid+1, j, nums,v);
+        vector<pair<int,int>> auxi;
+        int a = i, b = mid+1;
+        while(a <= mid){
+            while(b<=j && (nums[a].first > nums[b].first)){ 
+                auxi.push_back(nums[b]);
+                b++;
+            }
+            v[nums[a].second] += b-mid-1;
+            auxi.push_back(nums[a]);
+            a++;
+        }
+        while(a <= mid){    
+            auxi.push_back(nums[a++]);
+        }
+        while(b <= j)    auxi.push_back(nums[b++]);
+        
+        for(int k = i; k <= j; k++)    nums[k] = auxi[k-i];
+
+    }
+    vector<int> countSmaller(vector<int>& nums) {
+        int n = nums.size();
+        vector<pair<int,int>> t;
+        for(int i = 0 ; i< nums.size(); i++){
+            t.push_back({nums[i],i});
+        }
+        vector<int> v(n,0);
+        mergeSort(0,n-1, t,v);
+        return v;
+    }
+
+// 4. Count of Range Sum
