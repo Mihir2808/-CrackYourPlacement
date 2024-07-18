@@ -1,0 +1,92 @@
+// 1.Combinations Sum 2
+
+class Solution {
+public:
+    // timecomplexity increase with 2^100 with knapsack
+    // so we only take those cases in which we take the value of array
+    vector<vector<int>> ans;
+    void solve(int i,vector<int> &nums, int target,vector<int> &temp){
+        if(target == 0){
+            ans.push_back(temp);
+            return ;
+        }
+
+        for(int j = i ;j < nums.size() ;j++){
+            if(nums[j] > target)   break;
+            if(j > i && nums[j] == nums[j-1])   continue;
+            temp.push_back(nums[j]);
+            solve(j+1, nums, target-nums[j], temp);
+            temp.pop_back();
+        }
+    }
+    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+        vector<int> temp;
+        sort(candidates.begin(),candidates.end());
+        solve(0,candidates, target,temp);
+        return ans;
+    }
+};
+
+// 2. Combinations
+class Solution {
+public:
+    vector<vector<int>> ans;
+    void solve(int i,int k,int n,vector<int>&temp){
+        if(k == 0){
+            ans.push_back(temp);
+            return ;
+        }
+        if(i == n+1)  return ;
+        temp.push_back(i);
+        solve(i+1, k-1, n,temp);
+        temp.pop_back();
+        solve(i+1, k, n,temp);
+    }
+    vector<vector<int>> combine(int n, int k) {
+        vector<int>temp;
+        solve(1, k, n,temp);
+        return ans;
+    }
+};
+
+//3. BITMASKING AND SUBSET FINDING 
+  class Solution {
+public:
+    vector<vector<int>> ans;
+    set<vector<int>> s;
+    void solve(int i, vector<int> &nums, vector<int> &temp){
+        // if(i == nums.size()){
+        //     if(s.find(temp) == s.end()) ans.push_back(temp);
+        //     s.insert(temp);
+        //     return ;
+        // }
+
+        // temp.push_back(nums[i]);
+        // solve(i+1, nums, temp);
+        // temp.pop_back();
+        // solve(i+1, nums, temp);
+
+        // ************************ BITMASKING 
+        int n = nums.size();
+        int size = pow(2,n);
+        for(i = 0 ;i < size ; i++){
+            int val = i;
+            int ind = 0;
+            while(val){
+                int r = val%2;
+                if(r == 1)  temp.push_back(nums[ind]);
+                val/=2;
+                ind++;
+            }
+            if(s.find(temp) == s.end()) ans.push_back(temp);
+            s.insert(temp);
+            temp.resize(0);
+        }
+    }
+    vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+        sort(nums.begin(),nums.end());
+        vector<int> temp;
+        solve(0, nums, temp);
+        return ans;
+    }
+};
