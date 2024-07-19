@@ -90,3 +90,137 @@ public:
         return ans;
     }
 };
+
+// 4. M coloring problem
+ bool put(int col, int node,bool graph[101][101],vector<int> &nodeColour){
+        for(int i = 0; i < nodeColour.size() ;i++){
+            if(node != i && graph[node][i] == 1  && nodeColour[i] == col)    return false;
+        }
+        return true;
+    }
+    
+    bool solve(int node, int n, int &noOfColours,bool graph[101][101], vector<int> &nodeColour){
+        if(node == n)   return true;
+        
+        for(int j = 1 ; j <= noOfColours; j++){
+            // kya mai jth colour put kr skta hu node pe
+            if(put(j, node, graph,nodeColour)){
+                nodeColour[node] = j;
+                if(solve(node+1, n, noOfColours, graph, nodeColour))   return true;
+                else nodeColour[node] = 0;
+            }
+        }
+        return false;
+    }
+    bool graphColoring(bool graph[101][101], int m, int n) {
+        vector<int> nodeColour(n,0);
+        return solve(0, n, m, graph, nodeColour);
+    }
+
+// 5. beautiful arrangement
+class Solution {
+public:
+    int cnt = 0;
+    void permut(int i, vector<int> &nums,vector<vector<int>> &res){
+        if(i == nums.size()){
+            cnt++;
+            return;
+        }
+        // swap with itself and all others in loop , 
+        for(int j = i; j< nums.size() ;j++){
+            swap(nums[i], nums[j]);
+            if((nums[i]%(i+1) == 0 || (i+1)%nums[i] == 0))    permut(i+1, nums, res);
+            swap(nums[i], nums[j]);
+        }
+    }
+    int countArrangement(int n) {
+        vector<vector<int>> res;
+        vector<int> nums;
+        for(int i = 1; i <= n; i++)  nums.push_back(i);
+        permut(0, nums , res);
+        return cnt;
+    }
+};  
+
+//6. Palindrome partitioning
+class Solution {
+public:
+    bool palin(string &temp){
+        int i = 0, j = temp.length()-1;
+        while(i < j){
+            if(temp[i] != temp[j])  return false;
+            i++;
+            j--;
+        }
+        return true;
+    }
+    vector<vector<string>> ans;
+    void solve(int i, string &s, vector<string> &t){
+        if(i == s.length()){
+            ans.push_back(t);
+            return ;
+        }
+        string temp = "";
+        for(int j = i; j< s.length() ;j++){
+            temp += s[j];
+            if(palin(temp)){
+                t.push_back(temp);
+                solve(j+1, s, t);
+                t.pop_back();
+            }
+        }
+    }
+    vector<vector<string>> partition(string s) {
+        vector<string> t;
+        solve(0, s, t);
+        return ans;
+    }
+};
+
+//7. permutations II
+class Solution {
+public:
+    set<vector<int>> s;
+    void permut(int i, vector<int> &nums,vector<vector<int>> &res){
+        if(i == nums.size()){
+            if(s.find(nums) == s.end()){
+                res.push_back(nums);
+            }
+            s.insert(nums);
+            return;
+        }
+        // swap with itself and all others in loop , 
+        for(int j = i; j< nums.size() ;j++){
+            swap(nums[i], nums[j]);
+            permut(i+1, nums, res);
+            swap(nums[i], nums[j]);
+        }
+    }
+    vector<vector<int>> permuteUnique(vector<int>& nums) {
+        vector<vector<int>> res;
+        permut(0, nums , res);
+        return res;
+    }
+};
+
+// 8. subsets
+class Solution {
+public:
+    void solve(int i , vector<int> &nums, vector<int> v ,vector<vector<int>> &ans){
+        if(i == nums.size()){
+            ans.push_back(v);
+            return ;
+        }
+        v.push_back(nums[i]);
+        solve(i+1 , nums ,v , ans);
+        v.pop_back();
+        solve(i+1 , nums ,v , ans);
+    }
+    vector<vector<int>> subsets(vector<int>& nums) {
+        vector<vector<int>> ans;
+        solve(0,nums,{},ans);
+        return ans;
+    }
+};
+
+//9.
