@@ -224,3 +224,69 @@ public:
 };
 
 //9.
+//12.    Time complexity - worst case  O(2^k)
+Largest no with k swaps
+  string solve(int i, string str, int k){
+        if(k == 0 || i == str.length()){
+            return str;
+        }
+        
+        char maxi = str[i];
+        for(int j = i+1; j < str.length() ; j++)    maxi= max(maxi, str[j]);
+        
+        string temp = "";
+        if(maxi == str[i]){
+            temp = solve(i+1, str, k);
+        }
+        else{
+            for(int j = i+1; j < str.length() ; j++){
+                if(str[j] == maxi){
+                    swap(str[i],str[j]);
+                    temp = max(temp,solve(i+1,str,k-1));
+                    swap(str[i],str[j]);
+                }
+            }
+        }
+        return temp;
+        
+    }
+    string findMaximumNum(string str, int k){
+        return solve(0, str, k);
+    }
+
+//13. Partition array to K subsets
+
+int dp[11][11][1003];
+    bool solve(int i, int a[],int n , int k,int target, int currSum,vector<int> &vis){
+        if(currSum == target){
+            if(k == 1)  return 1;
+            else{
+                return solve(0, a, n, k-1, target, 0, vis);
+            }
+        }
+        if(i == n)  return 0;
+        
+        // if(dp[i][k][currSum] != -1) return dp[i][k][currSum];
+        
+        bool take = 0, notTake = 0;
+        if(vis[i] == 0 && currSum + a[i] <= target){    
+            vis[i] = 1;
+            take = solve(i+1, a, n, k, target, currSum + a[i], vis);
+            vis[i] = 0;
+        }
+        notTake = solve(i+1, a, n, k, target, currSum,vis);
+        
+        return dp[i][k][currSum] = (take || notTake);
+    }
+    bool isKPartitionPossible(int a[], int n, int k){
+         //Your code here
+        int sum = 0;
+        for(int i =0; i < n ;i++){
+            sum += a[i];
+        }
+        
+        if(sum%k != 0|| n < k)  return 0;
+        vector<int> vis(n,0);
+        memset(dp,-1,sizeof(dp));
+        return solve(0, a, n, k, sum/k, 0, vis);
+    }
