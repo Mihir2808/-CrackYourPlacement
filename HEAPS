@@ -1,4 +1,4 @@
-1. sliding window maximum (HARD) --------  time complexity  k log k
+1. sliding window maximum (HARD) --------  time complexity  n-k log n-k
  vector<int> maxSlidingWindow(vector<int>& nums, int k) {
         map<int,int> mp;
         for(int i = 0; i < k; i++)    mp[nums[i]]++;
@@ -16,5 +16,30 @@
             i++;
             j++;
         }while(j < nums.size());
+        return ans;
+    }
+
+vector<int> maxSlidingWindow(vector<int>& nums, int k) { ****************************using deque O(n-k) log n-k
+        vector<int> ans;
+        deque<int> dq;
+
+        // we have to maintain only largest values of window in deque
+        // so if we get value which is more larger than value in deque
+        // we pop that no from deque and put more larget in front
+        for(int i =0 ; i< nums.size(); i++){
+            // pop that index which is out of window [i-k+1, i] so i-k left side of window
+            while(!dq.empty() && dq.front() <= (i-k)){
+                dq.pop_front();
+            }
+            while(!dq.empty() && nums[dq.back()] <= nums[i]){
+                dq.pop_back();
+            }
+
+            dq.push_back(i);
+
+            if(i>= k-1){
+                ans.push_back(nums[dq.front()]);
+            }
+        }
         return ans;
     }
